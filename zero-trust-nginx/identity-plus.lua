@@ -1,9 +1,17 @@
 -- read the serial number, this will be a hexadecimal integer value
 local serial = ngx.var.ssl_client_serial
+local distinguished_name = ngx.var.ssl_client_s_dn
+
+-- see if we have information about this serial cached                
+-- we will cache responses from identity plus to avoid introducing a lag in each and every request
 
 -- resolve from memcache
-local memcache = ngx.shared.identity_plus_memcache
+local memcache = nill
+if ngx.var.request_uri ~= "/identityplus/diagnose" then
+    memcache = ngx.shared.identity_plus_memcache
+end
 
+-- in diagnose mode, we skip the cache
 if memcache ~= nil then
     local cached_roles = memcache:get(serial)
     if cached_roles ~= nil then
@@ -13,12 +21,16 @@ end
 
 local roles = ""
 
--- see if we have information about this serial cached                
--- we will cache responses from identity plus to avoid introducing a lag in each and every request
+-- resolve from file cache
 local result = ""
-local cache = io.open(CACHE_DIR.."/"..serial, "r")
+
+local cache = nil
+if ngx.var.request_uri ~= "/identityplus/diagnose" then
+    cache = io.open(CACHE_DIR.."/"..serial, "r")
+end
 
 -- if the cache file exist load from cache
+-- in diagnose mode, we skip the cache
 if cache ~= nil then
     result = cache:read("*all")
     cache:close()
@@ -79,4 +91,4 @@ end
 -- this is for debug purposes
 -- ngx.log(0, result)
 
-return roles;
+return roles
