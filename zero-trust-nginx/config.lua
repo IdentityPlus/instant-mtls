@@ -1,11 +1,18 @@
 -- define constants, identity plus API home and the cahce timeout
-IDENTITY_PLUS_API = 'https://api.identity.plus/v1'
 
-IDENTITY_PLUS_AGENT_KEY = "/home/... where the identity plus agent key is"
-IDENTITY_PLUS_AGENT_CERT = "/home/... where the identity plus agent certificate is"
+-- The API home. This is useful to define alternative routes
+IDENTITY_PLUS_SERVICE = 'identity.plus'
 
--- nginx needs to have write access to this folder
-CACHE_DIR = "/home/... where the cache should be"
+-- search pattern is /etc/'..host..'/agent-id/'..IDENTITY_PLUS_AGENT_NAME..'.key | .cer
+-- example /etc/www.my-service.com/agent-id/Default.key
+IDENTITY_PLUS_AGENT_NAME = "Default"
 
--- timeout is in seconds
+-- subdirectories need to be created for all host-names (../www.my-service.com) and
+-- nginx needs to own the sub-folders
+CACHE_DIR = "/var/cache/identity-plus"
+
+-- timeout is in seconds (client certificates will be re-validated at this interval)
 CACHE_TIMEOUT = 1800
+
+-- authentication fail policy ['block' / 'auth']
+STRANGER_POLICY = 'auth'
