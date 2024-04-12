@@ -1,6 +1,4 @@
 -- define constants, identity plus API home and the cahce timeout
-
--- The API home. This is useful to define alternative routes
 IDENTITY_PLUS_SERVICE = 'identity.plus'
 
 -- search pattern is /etc/'..host..'/agent-id/'..IDENTITY_PLUS_AGENT_NAME..'.key | .cer
@@ -11,8 +9,13 @@ IDENTITY_PLUS_AGENT_NAME = "Default"
 -- nginx needs to own the sub-folders
 CACHE_DIR = "/var/cache/identity-plus"
 
--- timeout is in seconds (client certificates will be re-validated at this interval)
+-- timeout is in seconds
 CACHE_TIMEOUT = 1800
 
 -- authentication fail policy ['block' / 'auth']
 STRANGER_POLICY = 'auth'
+
+-- lack of device identity ['strict' / 'lax']
+-- not sure this will work, we have to somehow create a session mechanism in LUA
+-- otherwise every request will be redirected to identity plus
+DEVICE_IDENTITY_POLICY = 'lax'
