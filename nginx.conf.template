@@ -90,18 +90,18 @@ http {
     # Gracefully redirect non-https to https. This is one of the functionalities that is not available with strict client authentication
     server {
         listen 80;
-        server_name demo-client.stefan.idplus.zone;
-        return 301 https://demo-client.stefan.idplus.zone$request_uri;
+        server_name ${domain};
+        return 301 https://${domain}$request_uri;
     }
 
     # Configure Identity Plus based TLS authentication
     server{
         listen 443 ssl;
-        server_name                 demo-client.stefan.idplus.zone;
+        server_name                 ${domain};
         # This is the server certificate. You can get one for free from Identity Plus for development or personal purposes. You will have to ad the Identity Plus root certificate to your browser trust store
         # For commercial purposes we reommed you purchase one from a trusted certificate authority. The Identity Plus Lua module can work with server certificates issued by other authorities.
-        ssl_certificate             /etc/instant-mtls/service-id/demo-client.stefan.idplus.zone.cer;
-        ssl_certificate_key         /etc/instant-mtls/service-id/demo-client.stefan.idplus.zone.key;
+        ssl_certificate             /etc/instant-mtls/service-id/${domain}.cer;
+        ssl_certificate_key         /etc/instant-mtls/service-id/${domain}.key;
 	    proxy_buffering off;
 
         # Invoke the identity plus lua module to validate the certificate
