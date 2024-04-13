@@ -20,6 +20,7 @@ RUN go build
 # autoproviion the agent mTLS ID
 RUN mkdir /etc/instant-mtls
 RUN mkdir /var/cache/instant-mtls
+RUN chown www-data:www-data /var/cache/instant-mtls
 
 RUN ./identityplus -f /etc/instant-mtls -d "Service-Agent" enroll-service-device ${token}
 RUN ./identityplus -f /etc/instant-mtls -d "Service-Agent" issue-service-identity
@@ -27,10 +28,9 @@ RUN curl https://platform.identity.plus/download/trust-chain?format=pem --cert /
 RUN ls /etc/instant-mtls/service-id | grep .cer | sed "s/.cer//" > /etc/instant-mtls/service-id/domain
 
 # get the Identity Plus Lua integration
-RUN mkdir /opt/identity.plus/instant-mtls
-RUN mkdir /opt/identity.plus/instant-mtls/shell
-RUN curl https://raw.githubusercontent.com/IdentityPlus/instant-mtls/blob/master/instant-mtls/config.lua > /opt/identity.plus/instant-mtls/config.lua
-RUN curl https://raw.githubusercontent.com/IdentityPlus/instant-mtls/blob/master/instant-mtls/identityplus.lua > /opt/identity.plus/instant-mtls/identityplus.lua
+RUN mkdir -p /opt/identity.plus/instant-mtls/shell
+COPY instant-mtls/config.lua /opt/identity.plus/instant-mtls/
+COPY instant-mtls/identityplus.lua /opt/identity.plus/instant-mtls/
 
 # install identity refresh automation
 RUN curl https://raw.githubusercontent.com/IdentityPlus/cli/main/update-agent.sh > /opt/identity.plus/cli/update-agent.sh

@@ -36,7 +36,7 @@ local _M = {}
 
         local cache = nil
         if ngx.var.request_uri ~= "/identityplus/diagnose" then
-            os.execute("mkdir " .. CACHE_DIR.."/"..ngx.var.host)
+            os.execute("mkdir -p " .. CACHE_DIR.."/"..ngx.var.host)
             cache = io.open(CACHE_DIR.."/"..ngx.var.host.."/"..serial, "r")
         end
 
@@ -66,7 +66,7 @@ local _M = {}
         if cache == nil then
 
             -- make the call to identity plus api to find out about the certificate
-            local cmd = '/usr/bin/curl -sk -X GET -H "Content-Type: application/json" -d \'{"Identity-Inquiry": {"serial-number": "0x'..serial..'"}}\' --key /etc/'..ngx.var.host..'/agent-id/'..IDENTITY_PLUS_AGENT_NAME..'.key --cert /etc/'..ngx.var.host..'/agent-id/'..IDENTITY_PLUS_AGENT_NAME..'.cer https://api.'..IDENTITY_PLUS_SERVICE..'/v1'
+            local cmd = '/usr/bin/curl -sk -X GET -H "Content-Type: application/json" -d \'{"Identity-Inquiry": {"serial-number": "0x'..serial..'"}}\' --key '..IDENTITY_PLUS_IDENTITY_FOLDER..'/'..IDENTITY_PLUS_AGENT_NAME..'.key --cert '..IDENTITY_PLUS_IDENTITY_FOLDER..'/'..IDENTITY_PLUS_AGENT_NAME..'.cer https://api.'..IDENTITY_PLUS_SERVICE..'/v1'
 
             -- this is for debug purpose
             -- ngx.log(0, cmd)
@@ -111,7 +111,7 @@ local _M = {}
 
     function _M.fail()
         if STRANGER_POLICY == 'auth' then
-            local cmd = '/usr/bin/curl -sk -X PUT -H "Content-Type: application/json" -d \'{"Intent": {"type": "request"}}\' --key /etc/'..ngx.var.host..'/agent-id/'..IDENTITY_PLUS_AGENT_NAME..'.key --cert /etc/'..ngx.var.host..'/agent-id/'..IDENTITY_PLUS_AGENT_NAME..'.cer https://api.'..IDENTITY_PLUS_SERVICE..'/v1'
+            local cmd = '/usr/bin/curl -sk -X PUT -H "Content-Type: application/json" -d \'{"Intent": {"type": "request"}}\' --key '..IDENTITY_PLUS_IDENTITY_FOLDER..'/'..IDENTITY_PLUS_AGENT_NAME..'.key --cert '..IDENTITY_PLUS_IDENTITY_FOLDER..'/'..IDENTITY_PLUS_AGENT_NAME..'.cer https://api.'..IDENTITY_PLUS_SERVICE..'/v1'
             local output = io.popen(cmd, 'r')
             result = output:read('*all')
             output:close()

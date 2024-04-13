@@ -102,6 +102,11 @@ http {
         # For commercial purposes we reommed you purchase one from a trusted certificate authority. The Identity Plus Lua module can work with server certificates issued by other authorities.
         ssl_certificate             /etc/instant-mtls/service-id/${domain}.cer;
         ssl_certificate_key         /etc/instant-mtls/service-id/${domain}.key;
+
+        ssl_client_certificate      /etc/instant-mtls/identity-plus-trust-store.pem;
+        ssl_verify_client           optional;
+        ssl_verify_depth            2;
+
 	    proxy_buffering off;
 
         # Invoke the identity plus lua module to validate the certificate
@@ -114,7 +119,7 @@ http {
         location /identityplus/diagnose {
             access_by_lua_block {
                 local identityplus = require "identityplus"
-                # When testing you can comment out the below role enforcement but it is recommended for security reasons to not allow anyone to abuse this endpoint
+                -- When testing you can comment out the below role enforcement but it is recommended for security reasons to not allow anyone to abuse this endpoint
                 identityplus.ensure_role({'"administrator"'})
                 identityplus.diagnostics()
             }
@@ -140,8 +145,8 @@ http {
             # terminate the connection if the role do not match with the 
             access_by_lua_block {
                 local identityplus = require "identityplus"
-                # you define these roles in the https://platform.identity.plus dashboard, Your Organization, Your Service, "Access Management"
-                # please follow the quotation pattern as seen below
+                -- you define these roles in the https://platform.identity.plus dashboard, Your Organization, Your Service, "Access Management"
+                -- please follow the quotation pattern as seen below
                 identityplus.ensure_role({'"member"', '"administrator"'})
             } 
 
