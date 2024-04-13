@@ -3,7 +3,7 @@ IDENTITY_PLUS_SERVICE = 'identity.plus'
 
 -- search pattern is /etc/'..host..'/agent-id/'..IDENTITY_PLUS_AGENT_NAME..'.key | .cer
 -- example /etc/www.my-service.com/agent-id/Default.key
-IDENTITY_PLUS_AGENT_NAME = "Service-Name"
+IDENTITY_PLUS_AGENT_NAME = "Service-Agent"
 
 -- subdirectories need to be created for all host-names (../www.my-service.com) and
 -- nginx needs to own the sub-folders
