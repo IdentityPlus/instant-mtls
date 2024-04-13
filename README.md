@@ -1,12 +1,8 @@
-# Zero Trust with Nginx
+# Instant mTLS with Identity Plus
 
-Building a zero trust gateway based on SSL client certificate authentication and role based authorization using identity plus, Nginx and Lua.
+Building an mTLS service/API gateway based on SSL client certificate authentication and role based authorization using identity plus, Openresty/Nginx and Lua.
 
 ## Requirements
 
-## Install Nginx and lua
+## Install Docker
 
-### For Ubuntu
-
-sudo apt-get install nginx
-sudo apt-get install nginx-plus-module-lua
