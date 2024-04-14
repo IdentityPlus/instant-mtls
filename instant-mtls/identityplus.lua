@@ -147,19 +147,15 @@ local _M = {}
 
 
     function _M.diagnostics()
-        if ngx.var.identity_plus_roles == nil or ngx.var.identity_plus_roles:len() == 0 then
-            _M.fail()
-        else
-            ngx.status = 200
-            ngx.header["Content-Type"] = "text/plain"
-            ngx.say("Identity Plus diagnose: OK")
-            ngx.say("Roles: "..ngx.var.identity_plus_roles)
-            ngx.say("Client Serial Number: "..ngx.var.ssl_client_serial)
-            ngx.say("Client Distinguished Name: "..ngx.var.ssl_client_s_dn)
-            ngx.say("Agent Type: "..ngx.var.ssl_client_s_dn_ou)
-            ngx.say("Agent ID: "..string.gsub(ngx.var.ssl_client_s_dn_cn, " / %d+", ""))
-            return ngx.exit(200)
-        end
+        ngx.status = 200
+        ngx.header["Content-Type"] = "text/plain"
+        ngx.say("Identity Plus diagnose: OK")
+        ngx.say("Roles: "..ngx.var.identity_plus_roles)
+        ngx.say("Client Serial Number: "..ngx.var.ssl_client_serial)
+        ngx.say("Client Distinguished Name: "..ngx.var.ssl_client_s_dn)
+        ngx.say("Agent Type: "..ngx.var.ssl_client_s_dn_ou)
+        ngx.say("Agent ID: "..string.gsub(ngx.var.ssl_client_s_dn_cn, " / %d+", ""))
+        return ngx.exit(200)
     end
 
 return _M

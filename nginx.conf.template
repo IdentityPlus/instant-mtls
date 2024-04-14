@@ -120,7 +120,7 @@ http {
             access_by_lua_block {
                 local identityplus = require "identityplus"
                 -- When testing you can comment out the below role enforcement but it is recommended for security reasons to not allow anyone to abuse this endpoint
-                identityplus.ensure_role({'"administrator"'})
+                -- identityplus.ensure_role({'"administrator"'})
                 identityplus.diagnostics()
             }
         }
