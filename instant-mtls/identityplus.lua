@@ -83,7 +83,7 @@ local _M = {}
 
             -- update the cache and prefix it with timestamp
             if cache == nil then
-                ngx.log(ngx.STDERR, '---->> cache: '..CACHE_DIR.."/"..ngx.var.host.."/"..serial..'\n')
+                -- ngx.log(ngx.STDERR, '---->> cache: '..CACHE_DIR.."/"..ngx.var.host.."/"..serial..'\n')
 
                 cache = io.open(CACHE_DIR.."/"..ngx.var.host.."/"..serial, "w")
                 cache:write(os.time()..result)
@@ -125,7 +125,7 @@ local _M = {}
         else
             ngx.status = 400
             ngx.header["Content-Type"] = "text/plain"
-            ngx.say("Very bad SSL request. Possible causes:")
+            ngx.say("Bad TLS/mTLS request. Possible causes:")
             ngx.say(" - no client certificate detected,")
             ngx.say(" - client certificate expired,")
             ngx.say(" - client certificate authority not trusted,")
@@ -150,6 +150,13 @@ local _M = {}
         end
     end
 
+    function _M.purge()
+        os.execute("rm " .. CACHE_DIR .. "/" .. ngx.var.host .. "/*")
+        ngx.status = 200
+        ngx.header["Content-Type"] = "text/plain"
+        ngx.say("Identity Plus mTLS caches purged: OK")
+        return ngx.exit(200)
+    end
 
     function _M.diagnostics()
         ngx.status = 200

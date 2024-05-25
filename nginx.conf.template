@@ -169,13 +169,21 @@ http {
             return identityplus.init()
         }
 
-        # Identity Plus dynamic diagnostic page;
+        # Identity Plus dynamic diagnostic pages;
         location /identityplus/diagnose {
             access_by_lua_block {
                 local identityplus = require "identityplus"
                 -- When testing you can comment out the below role enforcement but it is recommended for security reasons to not allow anyone to abuse this endpoint
                 -- identityplus.ensure_role({'"administrator"'})
                 identityplus.diagnostics()
+            }
+        }
+
+        location /identityplus/purge {
+            access_by_lua_block {
+                local identityplus = require "identityplus"
+                identityplus.ensure_role({'"administrator"'})
+                identityplus.purge()
             }
         }
 
