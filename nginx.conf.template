@@ -234,20 +234,6 @@ http {
             }
         }
 
-        # you can define different roles and access based on different location patterns.
-        location /public {
-
-            # terminate the connection if the role do not match with the 
-            # no identity.plus
-
-            # configure headers to be forwarded upstream
-            proxy_set_header    X-Forwarded-For $remote_addr;
-            proxy_set_header    Host $host;
-
-            # forward to your upstream service 
-            proxy_pass          http://localhost:8080;
-        }
-
         # you can define different roles and access based on different location patterns. 
         # "/" will apply it for any URL on this domain other than the ones defined above
         location / {
@@ -266,6 +252,17 @@ http {
             proxy_set_header    X-TLS-Client-Serial $ssl_client_serial;
             proxy_set_header    X-Client-Roles $identity_plus_roles;
             proxy_set_header    Host $host;
+            proxy_set_header    X-NginX-Proxy true;
+
+            real_ip_header X-Real-IP;
+            proxy_connect_timeout 300;
+    
+            # To support websocket
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+
+            chunked_transfer_encoding off;
 
             # authentication successful, forward to your upstream service 
             proxy_pass          http://10.0.0.2:9001;
