@@ -3,8 +3,7 @@ FROM openresty/openresty:jammy-amd64
 ARG token
 
 RUN apt update
-RUN apt install -y cron python3 python3-pip golang
-RUN pip3 install pyyaml
+RUN apt install -y cron golang
 
 # configure Identity Plus
 RUN mkdir /opt/identity.plus

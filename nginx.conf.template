@@ -89,15 +89,124 @@ http {
 
     # Gracefully redirect non-https to https. This is one of the functionalities that is not available with strict client authentication
     server {
-        listen 80;
-        server_name ${domain};
-        return 301 https://${domain}$request_uri;
+        listen         80;
+        return 301 https://$host$request_uri;
+    }   
+
+    # Configure Identity Plus based TLS authentication
+    server{
+        listen 443 ssl;
+        server_name                 minio-service.${domain};
+        # This is the server certificate. You can get one for free from Identity Plus for development or personal purposes. You will have to ad the Identity Plus root certificate to your browser trust store
+        # For commercial purposes we reommed you purchase one from a trusted certificate authority. The Identity Plus Lua module can work with server certificates issued by other authorities.
+        ssl_certificate             /etc/instant-mtls/service-id/${domain}.cer;
+        ssl_certificate_key         /etc/instant-mtls/service-id/${domain}.key;
+
+        ssl_client_certificate      /etc/instant-mtls/identity-plus-trust-store.pem;
+        ssl_verify_client           optional;
+        ssl_verify_depth            2;
+
+	    proxy_buffering off;
+
+        # Invoke the identity plus lua module to validate the certificate
+        set_by_lua_block $identity_plus_roles {
+            local identityplus = require "identityplus"
+            return identityplus.init()
+        }
+
+        # Identity Plus dynamic diagnostic page;
+        location /identityplus/diagnose {
+            access_by_lua_block {
+                local identityplus = require "identityplus"
+                -- When testing you can comment out the below role enforcement but it is recommended for security reasons to not allow anyone to abuse this endpoint
+                -- identityplus.ensure_role({'"administrator"'})
+                identityplus.diagnostics()
+            }
+        }
+
+        # you can define different roles and access based on different location patterns. 
+        # "/" will apply it for any URL on this domain other than the ones defined above
+        location / {
+
+            # terminate the connection if the role do not match with the 
+            access_by_lua_block {
+                local identityplus = require "identityplus"
+                -- you define these roles in the https://platform.identity.plus dashboard, Your Organization, Your Service, "Access Management"
+                -- please follow the quotation pattern as seen below
+                identityplus.ensure_role({'"member"', '"administrator"', '"customer"'})
+            } 
+
+            # configure headers to be forwarded upstream
+            proxy_set_header    X-Forwarded-For $remote_addr;
+            proxy_set_header    X-Client-Ip $remote_addr;
+            proxy_set_header    X-TLS-Client-Serial $ssl_client_serial;
+            proxy_set_header    X-Client-Roles $identity_plus_roles;
+            proxy_set_header    Host $host;
+
+            # authentication successful, forward to your upstream service 
+            proxy_pass          http://10.0.0.2:9000;
+        }
     }
 
     # Configure Identity Plus based TLS authentication
     server{
         listen 443 ssl;
-        server_name                 ${domain};
+        server_name                 minio-external.${domain};
+        # This is the server certificate. You can get one for free from Identity Plus for development or personal purposes. You will have to ad the Identity Plus root certificate to your browser trust store
+        # For commercial purposes we reommed you purchase one from a trusted certificate authority. The Identity Plus Lua module can work with server certificates issued by other authorities.
+        ssl_certificate             /etc/instant-mtls/service-id/${domain}.cer;
+        ssl_certificate_key         /etc/instant-mtls/service-id/${domain}.key;
+
+        ssl_client_certificate      /etc/instant-mtls/identity-plus-trust-store.pem;
+        ssl_verify_client           optional;
+        ssl_verify_depth            2;
+
+	    proxy_buffering off;
+
+        # Invoke the identity plus lua module to validate the certificate
+        set_by_lua_block $identity_plus_roles {
+            local identityplus = require "identityplus"
+            return identityplus.init()
+        }
+
+        # Identity Plus dynamic diagnostic page;
+        location /identityplus/diagnose {
+            access_by_lua_block {
+                local identityplus = require "identityplus"
+                -- When testing you can comment out the below role enforcement but it is recommended for security reasons to not allow anyone to abuse this endpoint
+                -- identityplus.ensure_role({'"administrator"'})
+                identityplus.diagnostics()
+            }
+        }
+
+        # you can define different roles and access based on different location patterns. 
+        # "/" will apply it for any URL on this domain other than the ones defined above
+        location / {
+
+            # terminate the connection if the role do not match with the 
+            access_by_lua_block {
+                local identityplus = require "identityplus"
+                -- you define these roles in the https://platform.identity.plus dashboard, Your Organization, Your Service, "Access Management"
+                -- please follow the quotation pattern as seen below
+                identityplus.ensure_role({'"member"', '"administrator"', '"customer"'})
+            } 
+
+            # configure headers to be forwarded upstream
+            proxy_set_header    X-Forwarded-For $remote_addr;
+            proxy_set_header    X-Client-Ip $remote_addr;
+            proxy_set_header    X-TLS-Client-Serial $ssl_client_serial;
+            proxy_set_header    X-Client-Roles $identity_plus_roles;
+            proxy_set_header    Host $host;
+
+            # authentication successful, forward to your upstream service 
+            proxy_pass          http://10.0.0.2:9000;
+        }
+    }
+
+
+    server{
+        listen 443 ssl;
+        server_name                 minio-admin.${domain};
         # This is the server certificate. You can get one for free from Identity Plus for development or personal purposes. You will have to ad the Identity Plus root certificate to your browser trust store
         # For commercial purposes we reommed you purchase one from a trusted certificate authority. The Identity Plus Lua module can work with server certificates issued by other authorities.
         ssl_certificate             /etc/instant-mtls/service-id/${domain}.cer;
@@ -133,6 +242,7 @@ http {
 
             # configure headers to be forwarded upstream
             proxy_set_header    X-Forwarded-For $remote_addr;
+            proxy_set_header    Host $host;
 
             # forward to your upstream service 
             proxy_pass          http://localhost:8080;
@@ -147,7 +257,7 @@ http {
                 local identityplus = require "identityplus"
                 -- you define these roles in the https://platform.identity.plus dashboard, Your Organization, Your Service, "Access Management"
                 -- please follow the quotation pattern as seen below
-                identityplus.ensure_role({'"member"', '"administrator"'})
+                identityplus.ensure_role({'"administrator"'})
             } 
 
             # configure headers to be forwarded upstream
@@ -155,11 +265,13 @@ http {
             proxy_set_header    X-Client-Ip $remote_addr;
             proxy_set_header    X-TLS-Client-Serial $ssl_client_serial;
             proxy_set_header    X-Client-Roles $identity_plus_roles;
+            proxy_set_header    Host $host;
 
             # authentication successful, forward to your upstream service 
-            proxy_pass          http://localhost:8080;
+            proxy_pass          http://10.0.0.2:9001;
         }
     }
+
 }
 
 

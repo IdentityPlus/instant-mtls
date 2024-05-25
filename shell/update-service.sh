@@ -2,7 +2,7 @@
 
 if !(crontab -l | grep -q update-service.sh) ; then
     DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-    echo "installing service update cron job for 2AM every daily"    
+    echo "installing service update cron job for 4AM every daily"    
     (crontab -l ; echo "0 4 * * * $DIR/update-service.sh $1 $2") | sort - | uniq - | crontab -
 fi
 
