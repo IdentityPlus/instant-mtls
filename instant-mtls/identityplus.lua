@@ -125,7 +125,12 @@ local _M = {}
         else
             ngx.status = 400
             ngx.header["Content-Type"] = "text/plain"
-            ngx.say("Very bad SSL request")
+            ngx.say("Very bad SSL request. Possible causes:")
+            ngx.say(" - no client certificate detected,")
+            ngx.say(" - client certificate expired,")
+            ngx.say(" - client certificate authority not trusted,")
+            ngx.say(" - client certificate authentication failed,")
+            ngx.say(" - certificate owner does not have the right to access the requested content")
             return ngx.exit(400)
         end
     end

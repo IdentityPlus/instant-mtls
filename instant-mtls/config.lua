@@ -16,7 +16,7 @@ CACHE_DIR = "/var/cache/instant-mtls"
 CACHE_TIMEOUT = 1800
 
 -- authentication fail policy ['block' / 'auth']
-STRANGER_POLICY = 'auth'
+STRANGER_POLICY = 'block'
 
 -- lack of device identity ['strict' / 'lax']
 -- not sure this will work, we have to somehow create a session mechanism in LUA
