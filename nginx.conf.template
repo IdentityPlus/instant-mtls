@@ -179,14 +179,6 @@ http {
             }
         }
 
-        location /identityplus/purge {
-            access_by_lua_block {
-                local identityplus = require "identityplus"
-                identityplus.ensure_role({'"administrator"'})
-                identityplus.purge()
-            }
-        }
-
         # you can define different roles and access based on different location patterns. 
         # "/" will apply it for any URL on this domain other than the ones defined above
         location / {
@@ -239,6 +231,14 @@ http {
                 -- When testing you can comment out the below role enforcement but it is recommended for security reasons to not allow anyone to abuse this endpoint
                 -- identityplus.ensure_role({'"administrator"'})
                 identityplus.diagnostics()
+            }
+        }
+
+        location /identityplus/purge {
+            access_by_lua_block {
+                local identityplus = require "identityplus"
+                identityplus.ensure_role({'"administrator"'})
+                identityplus.purge()
             }
         }
 
