@@ -151,7 +151,14 @@ local _M = {}
     end
 
     function _M.purge()
+        -- purge mem cache
+        ngx.shared.identity_plus_memcache.flush_all()
+        ngx.shared.identity_plus_memcache.flush_expired()
+        
+        -- clean up file caches
         os.execute("rm " .. CACHE_DIR .. "/" .. ngx.var.host .. "/*")
+
+        -- respond
         ngx.status = 200
         ngx.header["Content-Type"] = "text/plain"
         ngx.say("Identity Plus mTLS caches purged: OK")
