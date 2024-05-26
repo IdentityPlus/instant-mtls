@@ -175,7 +175,7 @@ local _M = {}
         ngx.say("Client Distinguished Name: "..ngx.var.ssl_client_s_dn)
         ngx.say("Agent Type: "..ngx.var.ssl_client_s_dn_ou)
         ngx.say("Agent ID: "..string.gsub(ngx.var.ssl_client_s_dn_cn, " / %d+", ""))
-        ngx.say("Latency: "..(ngx.now() - t_zero)))
+        ngx.say("Latency: "..(ngx.now() - t_zero))
         return ngx.exit(200)
     end
 
