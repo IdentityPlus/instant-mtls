@@ -152,8 +152,8 @@ local _M = {}
 
     function _M.purge()
         -- purge mem cache
-        ngx.shared.identity_plus_memcache.flush_all()
-        ngx.shared.identity_plus_memcache.flush_expired()
+        ngx.shared.identity_plus_memcache:flush_all()
+        ngx.shared.identity_plus_memcache:flush_expired()
         
         -- clean up file caches
         os.execute("rm " .. CACHE_DIR .. "/" .. ngx.var.host .. "/*")
