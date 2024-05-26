@@ -84,7 +84,7 @@ local _M = {}
             -- update the cache and prefix it with timestamp
             if cache == nil then
                 -- ngx.log(ngx.STDERR, '---->> cache: '..CACHE_DIR.."/"..ngx.var.host.."/"..serial..'\n')
-
+                os.execute("mkdir -p " .. CACHE_DIR.."/"..ngx.var.host)
                 cache = io.open(CACHE_DIR.."/"..ngx.var.host.."/"..serial, "w")
                 cache:write(os.time()..result)
                 cache:close()
