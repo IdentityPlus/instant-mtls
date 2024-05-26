@@ -156,7 +156,7 @@ local _M = {}
         ngx.shared.identity_plus_memcache:flush_expired()
         
         -- clean up file caches
-        os.execute("rm " .. CACHE_DIR .. "/" .. ngx.var.host .. "/*")
+        os.execute("rm -rf " .. CACHE_DIR .. "/*")
 
         -- respond
         ngx.status = 200
