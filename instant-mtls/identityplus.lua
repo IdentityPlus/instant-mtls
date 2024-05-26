@@ -166,6 +166,7 @@ local _M = {}
     end
 
     function _M.diagnostics()
+        local t_zero = ngx.now()
         ngx.status = 200
         ngx.header["Content-Type"] = "text/plain"
         ngx.say("Identity Plus diagnose: OK")
@@ -174,6 +175,7 @@ local _M = {}
         ngx.say("Client Distinguished Name: "..ngx.var.ssl_client_s_dn)
         ngx.say("Agent Type: "..ngx.var.ssl_client_s_dn_ou)
         ngx.say("Agent ID: "..string.gsub(ngx.var.ssl_client_s_dn_cn, " / %d+", ""))
+        ngx.say("Latency: "..(ngx.now() - t_zero)))
         return ngx.exit(200)
     end
 
