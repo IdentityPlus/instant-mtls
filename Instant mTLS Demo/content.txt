@@ -1,0 +1,3 @@
+this some content 
+stored in Minio Object Storage.
+Use cautiousely!
