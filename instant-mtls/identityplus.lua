@@ -79,7 +79,46 @@ local _M = {}
         -- clean up file caches
         os.execute("rm -rf " .. CACHE_DIR .. "/*")
     end
+ 
+    function _M.simple_diagnostics(host)
+        ngx.status = 200
+        ngx.header["Content-Type"] = "text/plain"
 
+        ngx.say("Client Serial Number: "..ngx.var.ssl_client_serial.."")
+        ngx.say("Client Distinguished Name: "..ngx.var.ssl_client_s_dn.."")
+        -- ngx.say("Agent Type: "..ngx.var.ssl_client_s_dn_ou)
+        -- ngx.say("Agent ID: "..string.gsub(ngx.var.ssl_client_s_dn_cn, " / %d+", ""))
+
+        ngx.update_time()
+        local start_time = ngx.now()
+        
+        local validation = _M.validate(host, false)
+        
+        ngx.update_time()
+        local end_time = ngx.now()
+        
+        ngx.say("Response Latency: "..(end_time - start_time).."s")
+
+        local exit_code = 200
+
+        if validation == nil then
+            exit_code = _M.fail()
+
+        elseif validation["outcome"] then
+            ngx.say("Outcome: "..validation["outcome"].."")
+            if validation["service-roles"] then
+                _M.say_table_plain(validation["service-roles"], "    ")
+            end
+
+        else
+            _M.say_table_plain(validation)
+
+        end 
+
+        ngx.exit(exit_code)
+    end
+
+ 
     function _M.diagnostics(host)
         ngx.status = 200
         ngx.header["Content-Type"] = "text/html"
@@ -486,4 +525,17 @@ local _M = {}
             end
         end
     end
+
+    function _M.say_table_plain(t, indent)
+        indent = indent or ""
+        for k, v in pairs(t) do
+            if type(v) == "table" then
+                ngx.say(indent .. k .. ": ")
+                _M.say_table_plain(v, indent .. "  ")
+            else
+                ngx.say(indent .. k .. ": ", v)
+            end
+        end
+    end
+
 return _M

@@ -164,17 +164,17 @@ def main_page():
         if action == "provision":
             token = request.form.get("token")
             enroll(token)
-            display_text = "mTLS ID Provisioned:\n-----------\n" + fetch("https://minio-external.rbac.instant.mtls.app/identityplus/diagnose")
+            display_text = "mTLS ID Provisioned:\n-----------\n" + fetch("https://identityplus.rbac.instant.mtls.app/test/")
 
         elif action == "fetch_file":
             display_text = "Response from Object Storage Service:\n-----------\n" + fetch("https://minio-external.rbac.instant.mtls.app/private/content.txt")
 
         elif action == "run_diagnostics":
-            display_text = "Certificate information:\n-----------\n" + fetch("https://minio-external.rbac.instant.mtls.app/identityplus/diagnose")
+            display_text = "Certificate information:\n-----------\n" + fetch("https://identityplus.rbac.instant.mtls.app/")
 
         elif action == "rotate_certificate":
             renew()
-            display_text = "Certificate Rotated:\n-----------\n" + fetch("https://minio-external.rbac.instant.mtls.app/identityplus/diagnose")
+            display_text = "Certificate Rotated:\n-----------\n" + fetch("https://identityplus.rbac.instant.mtls.app/")
 
     return render_template_string(html_template, display_text=display_text)
 

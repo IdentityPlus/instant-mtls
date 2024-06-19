@@ -660,3 +660,33 @@
 2024-06-19 09:42:11,728 INFO spawned: 'openresty' with pid 8
 2024-06-19 09:42:12,732 INFO success: mtls-persona entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
 2024-06-19 09:42:12,732 INFO success: openresty entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-06-19 15:52:11,899 WARN received SIGQUIT indicating exit request
+2024-06-19 15:52:11,899 INFO waiting for mtls-persona, openresty to die
+2024-06-19 15:52:12,033 INFO stopped: openresty (exit status 0)
+2024-06-19 15:52:12,035 INFO stopped: mtls-persona (terminated by SIGTERM)
+2024-06-19 15:52:17,881 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2024-06-19 15:52:17,882 INFO supervisord started with pid 1
+2024-06-19 15:52:18,884 INFO spawned: 'mtls-persona' with pid 7
+2024-06-19 15:52:18,886 INFO spawned: 'openresty' with pid 8
+2024-06-19 15:52:19,890 INFO success: mtls-persona entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-06-19 15:52:19,891 INFO success: openresty entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-06-19 15:52:46,198 WARN received SIGQUIT indicating exit request
+2024-06-19 15:52:46,199 INFO waiting for mtls-persona, openresty to die
+2024-06-19 15:52:47,305 INFO stopped: openresty (exit status 0)
+2024-06-19 15:52:47,308 INFO stopped: mtls-persona (terminated by SIGTERM)
+2024-06-19 15:53:19,474 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2024-06-19 15:53:19,476 INFO supervisord started with pid 1
+2024-06-19 15:53:20,480 INFO spawned: 'mtls-persona' with pid 7
+2024-06-19 15:53:20,485 INFO spawned: 'openresty' with pid 8
+2024-06-19 15:53:21,489 INFO success: mtls-persona entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-06-19 15:53:21,489 INFO success: openresty entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-06-19 15:53:55,884 WARN received SIGQUIT indicating exit request
+2024-06-19 15:53:55,885 INFO waiting for mtls-persona, openresty to die
+2024-06-19 15:53:55,997 INFO stopped: openresty (exit status 0)
+2024-06-19 15:53:55,999 INFO stopped: mtls-persona (terminated by SIGTERM)
+2024-06-19 15:54:06,826 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2024-06-19 15:54:06,827 INFO supervisord started with pid 1
+2024-06-19 15:54:07,832 INFO spawned: 'mtls-persona' with pid 7
+2024-06-19 15:54:07,837 INFO spawned: 'openresty' with pid 8
+2024-06-19 15:54:08,853 INFO success: mtls-persona entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-06-19 15:54:08,853 INFO success: openresty entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
