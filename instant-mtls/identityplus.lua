@@ -19,7 +19,8 @@ local _M = {}
 
             ngx.status = 302
             ngx.header["Location"] = 'https://signon.'..IDENTITY_PLUS_SERVICE..'/'..intent_id
-            return ngx.exit(302)
+
+            return 302
         else
             ngx.status = 400
             ngx.header["Content-Type"] = "text/plain"
@@ -30,7 +31,7 @@ local _M = {}
             ngx.say(" - client certificate authentication failed,")
             ngx.say(" - certificate owner does not have the right to access the requested content")
 
-            return ngx.exit(400)
+            return 400
         end
     end
 
@@ -67,7 +68,7 @@ local _M = {}
         -- do audit logs, report the intruder
         ngx.log(0, 'Access blocked for mTLS ID '..ngx.var.ssl_client_serial..', on '..real_host..', no matching roles with any of '..table.concat(roles, ",")..' at this time');
 
-        _M.fail()
+        ngx.exit(_M.fail())
     end
 
     function _M.purge()
@@ -77,20 +78,17 @@ local _M = {}
         
         -- clean up file caches
         os.execute("rm -rf " .. CACHE_DIR .. "/*")
-
-        -- respond
-        ngx.status = 200
-        ngx.header["Content-Type"] = "text/plain"
-        ngx.say("Identity Plus mTLS caches purged: OK")
-        return ngx.exit(200)
     end
 
     function _M.diagnostics(host)
         ngx.status = 200
-        ngx.header["Content-Type"] = "text/plain"
+        ngx.header["Content-Type"] = "text/html"
+
+        ngx.say("<html><body>")
         
-        ngx.say("Client Serial Number: "..ngx.var.ssl_client_serial)
-        ngx.say("Client Distinguished Name: "..ngx.var.ssl_client_s_dn)
+        ngx.say("<h2>Identity Plus</h2>")
+        ngx.say("<p>Client Serial Number: "..ngx.var.ssl_client_serial.."</p>")
+        ngx.say("<p>Client Distinguished Name: "..ngx.var.ssl_client_s_dn.."</p>")
         -- ngx.say("Agent Type: "..ngx.var.ssl_client_s_dn_ou)
         -- ngx.say("Agent ID: "..string.gsub(ngx.var.ssl_client_s_dn_cn, " / %d+", ""))
 
@@ -102,21 +100,46 @@ local _M = {}
         ngx.update_time()
         local end_time = ngx.now()
         
-        ngx.say("Identity Plus Response: "..(end_time - start_time).."s")
+        ngx.say("<p>Response Latency: "..(end_time - start_time).."s</p>")
+
+        local exit_code = 200
 
         if validation == nil then
-            _M.fail()            
+            ngx.say("<pre>")
+            exit_code = _M.fail()
+            ngx.say("</pre>")
+
         elseif validation["outcome"] then
-            ngx.say("Outcome: "..validation["outcome"].."s")
-            ngx.say("Service Roles:")
+            ngx.say("<p>Outcome: "..validation["outcome"].."</p>")
+            ngx.say("<p>Service Roles:</p><ul>")
             if validation["service-roles"] then
                 _M.say_table(validation["service-roles"], "    ")
             end
-            ngx.exit(200)
+            ngx.say("</ul>")
+
         else
+            ngx.say("<pre>")
             _M.say_table(validation)
-            ngx.exit(200)
+            ngx.say("</pre>")
+
         end 
+
+        ngx.req.read_body()
+        local args, err = ngx.req.get_post_args()
+        if args then
+            if args["action"] == "purge" then
+                _M.purge()
+                ngx.say('<P>Identity Plus Cache Purged ...</P>')
+            end
+        end
+
+        ngx.say([[
+            <FORM method="POST"><INPUT type="SUBMIT" VALUE="Diagnose"><INPUT type="hidden" ID="action" NAME="action" VALUE="diagnose"></FORM>
+            <FORM method="POST"><INPUT type="SUBMIT" VALUE="Purge Caches"><INPUT type="hidden" ID="action" NAME="action" VALUE="purge"></FORM>
+        ]])
+        
+        ngx.say("</body></html>")
+        ngx.exit(exit_code)
     end
 
     function _M.configure_mtls(host)
@@ -447,16 +470,17 @@ local _M = {}
         end
     end
     
-    function _M.say_table(t, indent)
+    function _M.say_table(t)
         indent = indent or ""
         for k, v in pairs(t) do
             if type(v) == "table" then
-                ngx.say(indent .. k .. ": ")
-                _M.say_table(v, indent .. "  ")
+                ngx.say("<p>" .. k .. ":</p><ul>")
+                _M.say_table(v)
+                ngx.say("</ul>")
             elseif type(v) == "number" then
-                ngx.say(indent .. k .. ": "..("%.0f"):format(v))
+                ngx.say("<li>" .. k .. ": "..("%.0f"):format(v).."</li>")
             else
-                ngx.say(indent .. k .. ": "..v)
+                ngx.say("<li>" .. k .. ": "..v.."</li>")
             end
         end
     end
