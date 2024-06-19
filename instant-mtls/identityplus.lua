@@ -50,7 +50,7 @@ local _M = {}
             ngx.req.set_header("X-TLS-Client-Serial", ngx.var.ssl_client_serial)
             ngx.req.set_header("X-mTLS-ID-Serial", ngx.var.ssl_client_serial)
             ngx.req.set_header("X-mTLS-Roles", table.concat(validation["service-roles"], ","))
-            ngx.req.set_header("Host", real_host)
+            -- ngx.req.set_header("Host", real_host)
 
             for _, role in pairs(roles) do
                 for _, assigned_role in pairs(validation["service-roles"]) do
@@ -84,9 +84,11 @@ local _M = {}
         ngx.status = 200
         ngx.header["Content-Type"] = "text/html"
 
-        ngx.say("<html><body>")
+        ngx.say([[
+            <html><body>
+            <h2>Identity Plus</h2>
+        ]])
         
-        ngx.say("<h2>Identity Plus</h2>")
         ngx.say("<p>Client Serial Number: "..ngx.var.ssl_client_serial.."</p>")
         ngx.say("<p>Client Distinguished Name: "..ngx.var.ssl_client_s_dn.."</p>")
         -- ngx.say("Agent Type: "..ngx.var.ssl_client_s_dn_ou)
