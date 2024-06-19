@@ -1,15 +1,27 @@
 FROM openresty/openresty:jammy-amd64
 
 ARG token
+ARG config
 
 RUN apt update
-RUN apt install -y cron golang
+RUN apt install -y cron supervisor golang
 
 # configure Identity Plus
 RUN mkdir /opt/identity.plus
 
+# download additional Lua modules (http in particular)
+RUN opm get ledgetech/lua-resty-http
+
+# configurre the Identity Plus mTLS Persona
+RUN mkdir -p /opt/identity.plus/mtls-persona
+RUN curl https://raw.githubusercontent.com/IdentityPlus/mtls-persona/main/mtls-persona.go > /opt/identity.plus/mtls-persona/mtls-persona.go
+COPY persona.json /opt/identity.plus/mtls-persona/config.json
+WORKDIR /opt/identity.plus/mtls-persona
+RUN go mod init mtls-persona
+RUN go build
+
 # configurre the Identity Plus command line interface
-RUN mkdir /opt/identity.plus/cli
+RUN mkdir -p /opt/identity.plus/cli
 RUN curl https://raw.githubusercontent.com/IdentityPlus/cli/main/agents.go > /opt/identity.plus/cli/agents.go
 RUN curl https://raw.githubusercontent.com/IdentityPlus/cli/main/identityplus.go > /opt/identity.plus/cli/identityplus.go
 WORKDIR /opt/identity.plus/cli
@@ -20,6 +32,9 @@ RUN go build
 RUN mkdir /etc/instant-mtls
 RUN mkdir /var/cache/instant-mtls
 RUN chown www-data:www-data /var/cache/instant-mtls
+
+# create default certificates
+RUN openssl req -new -newkey rsa:2048 -days 36500 -nodes -x509 -subj '/CN=sni-support-required-for-valid-ssl' -keyout /etc/instant-mtls/resty-auto-ssl-fallback.key -out /etc/instant-mtls/resty-auto-ssl-fallback.cer
 
 RUN ./identityplus -f /etc/instant-mtls -d "Service-Agent" enroll-service-device ${token}
 RUN ./identityplus -f /etc/instant-mtls -d "Service-Agent" issue-service-identity
@@ -41,7 +56,32 @@ RUN chmod o+x /opt/identity.plus/instant-mtls/shell/update-service.sh
 WORKDIR /opt/identity.plus/instant-mtls/shell
 RUN exec ./update-service.sh /etc/instant-mtls "Service-Agent"
 
-COPY nginx.conf.template /usr/local/openresty/nginx/conf/
 RUN rm /usr/local/openresty/nginx/conf/nginx.conf
-RUN mv /usr/local/openresty/nginx/conf/nginx.conf.template /usr/local/openresty/nginx/conf/nginx.conf
+COPY conf /etc/instant-mtls/conf
+RUN find /etc/instant-mtls/conf/ -type f -exec sed -i "s/\${domain}/$(cat /etc/instant-mtls/service-id/domain)/g" {} +
+COPY instant-mtls.conf /usr/local/openresty/nginx/conf/nginx.conf
 RUN sed -i "s/\${domain}/$(cat /etc/instant-mtls/service-id/domain)/g" /usr/local/openresty/nginx/conf/nginx.conf
+
+
+RUN echo "[supervisord]" > /etc/supervisord.conf && \
+    echo "nodaemon=true" >> /etc/supervisord.conf && \
+    echo "" >> /etc/supervisord.conf && \
+    echo "[program:mtls-persona]" >> /etc/supervisord.conf && \
+    echo "directory=/opt/identity.plus/mtls-persona" >> /etc/supervisord.conf && \
+    echo "stdout_logfile=/dev/stdout" >> /etc/supervisord.conf && \
+    echo "stdout_logfile_maxbytes=0" >> /etc/supervisord.conf && \
+    echo "stderr_logfile=/dev/stderr" >> /etc/supervisord.conf && \
+    echo "stderr_logfile_maxbytes=0" >> /etc/supervisord.conf && \
+    echo "command=/opt/identity.plus/mtls-persona/mtls-persona" >> /etc/supervisord.conf && \
+    echo "" >> /etc/supervisord.conf && \
+    echo "[program:openresty]" >> /etc/supervisord.conf && \
+    echo "stdout_logfile=/dev/stdout" >> /etc/supervisord.conf && \
+    echo "stdout_logfile_maxbytes=0" >> /etc/supervisord.conf && \
+    echo "stderr_logfile=/dev/stderr" >> /etc/supervisord.conf && \
+    echo "stderr_logfile_maxbytes=0" >> /etc/supervisord.conf && \
+    echo "command=/usr/local/openresty/bin/openresty -g 'daemon off;'" >> /etc/supervisord.conf
+
+CMD ["/usr/bin/supervisord"]
+
+
+# CMD ["/usr/local/openresty/bin/openresty -g daemon off;"]

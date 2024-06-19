@@ -1,4 +1,8 @@
 -- define constants, identity plus API home and the cahce timeout
+MTLS_PERSONA_HOST = '127.0.0.1'
+MTLS_PERSONA_PORT = 4430
+
+-- define constants, identity plus API home and the cahce timeout
 IDENTITY_PLUS_SERVICE = 'identity.plus'
 
 -- defines the folder where the agent mTLS ID certificate and key are stored
@@ -22,3 +26,5 @@ STRANGER_POLICY = 'block'
 -- not sure this will work, we have to somehow create a session mechanism in LUA
 -- otherwise every request will be redirected to identity plus
 DEVICE_IDENTITY_POLICY = 'lax'
+
+identityplus = require "identityplus"

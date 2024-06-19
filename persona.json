@@ -1,0 +1,13 @@
+{
+    "address_pairs": [
+        {
+            "inbound": "127.0.0.1:4430",
+            "outbound": "api.identity.plus:443"
+        }
+    ],
+
+    "client_cert": "/etc/instant-mtls/Service-Agent.cer",
+    "client_key": "/etc/instant-mtls/Service-Agent.key",
+    "ca_cert": "/etc/instant-mtls/identity-plus-trust-store.pem",
+    "reload_hour": 3
+}
