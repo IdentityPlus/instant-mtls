@@ -202,7 +202,7 @@ The Identity Plus identity and access control mechanism is fully decentralized, 
 
 Also, when making calls from your local machine, please use the external domain anchor points, as you are now making connections across the Internet. Use https://minio-service.rbac.your-org.mtls.app, to access the service across the mTLS Gateway from the Internet.
 
-## Requirements
+## Wrap Up
 
 That concludes the demo, which contains all generic steps to integrate Idnetity Plus access control within your production environment, zero-trust from corporate to production - even if your corporate embraces BYOD model - and authenticate third party service across the Internet.
 
