@@ -170,11 +170,11 @@ def main_page():
             display_text = "Response from Object Storage Service:\n-----------\n" + fetch("https://minio-external.rbac.instant.mtls.app/private/content.txt")
 
         elif action == "run_diagnostics":
-            display_text = "Certificate information:\n-----------\n" + fetch("https://identityplus.rbac.instant.mtls.app/")
+            display_text = "Certificate information:\n-----------\n" + fetch("https://identityplus.rbac.instant.mtls.app/test/")
 
         elif action == "rotate_certificate":
             renew()
-            display_text = "Certificate Rotated:\n-----------\n" + fetch("https://identityplus.rbac.instant.mtls.app/")
+            display_text = "Certificate Rotated:\n-----------\n" + fetch("https://identityplus.rbac.instant.mtls.app/test/")
 
     return render_template_string(html_template, display_text=display_text)
 

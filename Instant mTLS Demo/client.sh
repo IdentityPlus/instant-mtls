@@ -28,7 +28,7 @@ mkdir -p /media/Work/Temp/IDP-Demo
 cd /opt/identity.plus/cli
 go build
 
-# get the identity 
+# issue the mTLS ID for this machine
 ./identityplus -f /media/Work/Temp/IDP-Demo -d 1Party enroll AUTOPROVISION-TOKEN-FROM-IDENTITY_PLUS
 
 # get the trust store (identity is needed)
@@ -38,7 +38,7 @@ curl https://platform.identity.plus/download/trust-chain?format=pem --cert /medi
 ./update-agent.sh /media/Work/Temp/IDP-Demo 1Party
 
 
-# demo stuff
+# internal client demo calls
 curl https://10.0.0.2:9000/private/content.txt
 curl https://minio-service.rbac.instant.mtls.app/private/content.txt --cert /media/Work/Temp/IDP-Demo/1Party.cer --key /media/Work/Temp/IDP-Demo/1Party.key --cacert /media/Work/Temp/identity-plus-root.cer
 curl https://minio-service.rbac.instant.mtls.app/identityplus/diagnose --cert /media/Work/Temp/IDP-Demo/1Party.cer --key /media/Work/Temp/IDP-Demo/1Party.key --cacert /media/Work/Temp/identity-plus-root.cer
@@ -47,6 +47,7 @@ curl https://minio-service.rbac.instant.mtls.app/identityplus/diagnose --cert /m
 curl https://minio-service.rbac.instant.mtls.app/identityplus/diagnose --cert /media/Work/Temp/IDP-Demo/1Party.cer --key /media/Work/Temp/IDP-Demo/1Party.key --cacert /media/Work/Temp/identity-plus-root.cer
 
 
+# 4rd party client demo calls
 ./identityplus -f /media/Work/Temp/IDP-Demo -d 3Party enroll 
 curl https://minio-external.rbac.instant.mtls.app/private/content.txt --cert /media/Work/Temp/IDP-Demo/3Party.cer --key /media/Work/Temp/IDP-Demo/3Party.key --cacert /media/Work/Temp/identity-plus-root.cer
 curl https://minio-external.rbac.instant.mtls.app/identityplus/diagnose --cert /media/Work/Temp/IDP-Demo/3Party.cer --key /media/Work/Temp/IDP-Demo/3Party.key --cacert /media/Work/Temp/identity-plus-root.cer

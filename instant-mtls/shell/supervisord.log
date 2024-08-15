@@ -690,3 +690,7 @@
 2024-06-19 15:54:07,837 INFO spawned: 'openresty' with pid 8
 2024-06-19 15:54:08,853 INFO success: mtls-persona entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
 2024-06-19 15:54:08,853 INFO success: openresty entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-06-25 22:04:01,090 WARN received SIGQUIT indicating exit request
+2024-06-25 22:04:01,097 INFO waiting for mtls-persona, openresty to die
+2024-06-25 22:04:02,200 INFO stopped: openresty (exit status 0)
+2024-06-25 22:04:02,202 INFO stopped: mtls-persona (terminated by SIGTERM)
