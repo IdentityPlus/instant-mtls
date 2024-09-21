@@ -39,7 +39,7 @@ RUN openssl req -new -newkey rsa:2048 -days 36500 -nodes -x509 -subj '/CN=sni-su
 RUN ./identityplus -f /etc/instant-mtls -d "Service-Agent" enroll-service-device ${token}
 RUN ./identityplus -f /etc/instant-mtls -d "Service-Agent" issue-service-identity
 RUN curl https://platform.identity.plus/download/trust-chain?format=pem --cert /etc/instant-mtls/Service-Agent.cer --key /etc/instant-mtls/Service-Agent.key > /etc/instant-mtls/identity-plus-trust-store.pem
-RUN ls /etc/instant-mtls/service-id | grep .cer | sed "s/.cer//" > /etc/instant-mtls/service-id/domain
+RUN ls /etc/instant-mtls/service-id | grep .cer | sed "s/.cer//" | sed "s/rbac.//"> /etc/instant-mtls/service-id/domain
 
 # get the Identity Plus Lua integration
 RUN mkdir -p /opt/identity.plus/instant-mtls/shell
