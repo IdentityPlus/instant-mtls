@@ -57,11 +57,11 @@ WORKDIR /opt/identity.plus/instant-mtls/shell
 RUN exec ./update-service.sh /etc/instant-mtls "Service-Agent"
 
 RUN rm /usr/local/openresty/nginx/conf/nginx.conf
-COPY conf /etc/instant-mtls/conf
-RUN find /etc/instant-mtls/conf/ -type f -exec sed -i "s/\${domain}/$(cat /etc/instant-mtls/service-id/domain)/g" {} +
+# COPY conf /etc/instant-mtls/conf
+COPY org-domain.conf /etc/instant-mtls/
+# RUN find /etc/instant-mtls/conf/ -type f -exec sed -i "s/\${domain}/$(cat /etc/instant-mtls/service-id/domain)/g" {} +
 COPY instant-mtls.conf /usr/local/openresty/nginx/conf/nginx.conf
-RUN sed -i "s/\${domain}/$(cat /etc/instant-mtls/service-id/domain)/g" /usr/local/openresty/nginx/conf/nginx.conf
-
+RUN sed -i "s/\${domain}/$(cat /etc/instant-mtls/service-id/domain)/g" /etc/instant-mtls/org-domain.conf
 
 RUN echo "[supervisord]" > /etc/supervisord.conf && \
     echo "nodaemon=true" >> /etc/supervisord.conf && \
