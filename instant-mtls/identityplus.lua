@@ -152,6 +152,8 @@ local _M = {}
 
         elseif validation["outcome"] then
             ngx.say("<p>Outcome: "..validation["outcome"].."</p>")
+            ngx.say("<p>Org. ID: "..validation["organizational-reference"].."</p>")
+            
             ngx.say("<p>Service Roles:</p><ul>")
             if validation["service-roles"] then
                 _M.say_table(validation["service-roles"], "    ")
