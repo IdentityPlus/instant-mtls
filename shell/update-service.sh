@@ -7,7 +7,7 @@ if !(crontab -l | grep -q update-service.sh) ; then
 fi
 
 echo -n "updating service identity ... "
-RESULT_S=$( /opt/identityplus/cli/identityplus -f $1/agent-id -d $2 update-service )
+RESULT_S=$( /opt/identity.plus/cli/identityplus -f $1/agent-id -d $2 update-service )
 echo $RESULT_S
 
 if [[ $RESULT_S == "renewed" ]]
