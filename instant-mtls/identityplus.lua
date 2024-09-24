@@ -154,7 +154,7 @@ local _M = {}
             ngx.say("<p>Outcome: "..validation["outcome"].."</p>")
             ngx.say("<p>Org. ID: ")
             if validation["organizational-reference"] then
-                _M.say(validation["organizational-reference"])
+                ngx.say(validation["organizational-reference"])
             end
             ngx.say("</p>")
             
