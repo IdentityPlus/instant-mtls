@@ -38,7 +38,8 @@ RUN openssl req -new -newkey rsa:2048 -days 36500 -nodes -x509 -subj '/CN=sni-su
 
 RUN ./identityplus -f /etc/instant-mtls -d "Service-Agent" enroll-service-device ${token}
 RUN ./identityplus -f /etc/instant-mtls -d "Service-Agent" issue-service-identity
-RUN curl https://platform.identity.plus/download/trust-chain?format=pem --cert /etc/instant-mtls/Service-Agent.cer --key /etc/instant-mtls/Service-Agent.key > /etc/instant-mtls/identity-plus-trust-store.pem
+RUN ./identityplus -f /etc/instant-mtls -d "Service-Agent" get-trust-store
+# RUN curl https://platform.identity.plus/download/trust-chain?format=pem --cert /etc/instant-mtls/Service-Agent.cer --key /etc/instant-mtls/Service-Agent.key > /etc/instant-mtls/identity-plus-trust-store.pem
 RUN ls /etc/instant-mtls/service-id | grep .cer | sed "s/.cer//" | sed "s/rbac.//"> /etc/instant-mtls/service-id/domain
 
 # get the Identity Plus Lua integration
@@ -57,10 +58,10 @@ WORKDIR /opt/identity.plus/instant-mtls/shell
 RUN exec ./update-service.sh /etc/instant-mtls "Service-Agent"
 
 RUN rm /usr/local/openresty/nginx/conf/nginx.conf
-# COPY conf /etc/instant-mtls/conf
+
+# we will map conf directory into the docker instance, but the following files (which will be referred to as defaults) will be buit into the image
 COPY org-domain.conf /etc/instant-mtls/
 COPY identityplus-defaults.inc /etc/instant-mtls/
-# RUN find /etc/instant-mtls/conf/ -type f -exec sed -i "s/\${domain}/$(cat /etc/instant-mtls/service-id/domain)/g" {} +
 COPY instant-mtls.conf /usr/local/openresty/nginx/conf/nginx.conf
 RUN sed -i "s/\${domain}/$(cat /etc/instant-mtls/service-id/domain)/g" /etc/instant-mtls/org-domain.conf
 RUN sed -i "s/\${domain}/$(cat /etc/instant-mtls/service-id/domain)/g" /etc/instant-mtls/identityplus-defaults.inc
