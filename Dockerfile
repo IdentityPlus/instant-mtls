@@ -38,9 +38,10 @@ RUN openssl req -new -newkey rsa:2048 -days 36500 -nodes -x509 -subj '/CN=sni-su
 
 RUN ./identityplus -f /etc/instant-mtls -d "Service-Agent" enroll ${token}
 RUN ./identityplus -f /etc/instant-mtls -d "Service-Agent" issue-service-identity
+# print de domain before fetching the chain to have it alone in the directory
+RUN ls /etc/instant-mtls/service-id | grep .cer | sed "s/.cer//" | sed "s/rbac.//"> /etc/instant-mtls/service-id/domain
 RUN ./identityplus -f /etc/instant-mtls -d "Service-Agent" get-trust-chain
 # RUN curl https://platform.identity.plus/download/trust-chain?format=pem --cert /etc/instant-mtls/Service-Agent.cer --key /etc/instant-mtls/Service-Agent.key > /etc/instant-mtls/identity-plus-trust-store.pem
-RUN ls /etc/instant-mtls/service-id | grep .cer | sed "s/.cer//" | sed "s/rbac.//"> /etc/instant-mtls/service-id/domain
 
 # get the Identity Plus Lua integration
 RUN mkdir -p /opt/identity.plus/instant-mtls/shell
@@ -63,9 +64,8 @@ RUN rm /usr/local/openresty/nginx/conf/nginx.conf
 COPY org-domain.conf /etc/instant-mtls/
 COPY identityplus-defaults.inc /etc/instant-mtls/
 COPY instant-mtls.conf /usr/local/openresty/nginx/conf/nginx.conf
-RUN cat /etc/instant-mtls/service-id/domain
-RUN sed -i "s|${domain}|$(cat /etc/instant-mtls/service-id/domain | sed 's/[&/\]/\\&/g')|g" /etc/instant-mtls/org-domain.conf
-RUN sed -i "s|${domain}|$(cat /etc/instant-mtls/service-id/domain | sed 's/[&/\]/\\&/g')|g" /etc/instant-mtls/identityplus-defaults.inc
+RUN sed -i "s/\${domain}/$(cat /etc/instant-mtls/service-id/domain)/g" /etc/instant-mtls/org-domain.conf
+RUN sed -i "s/\${domain}/$(cat /etc/instant-mtls/service-id/domain)/g" /etc/instant-mtls/identityplus-defaults.inc
 
 RUN echo "[supervisord]" > /etc/supervisord.conf && \
     echo "nodaemon=true" >> /etc/supervisord.conf && \
