@@ -63,8 +63,8 @@ RUN rm /usr/local/openresty/nginx/conf/nginx.conf
 COPY org-domain.conf /etc/instant-mtls/
 COPY identityplus-defaults.inc /etc/instant-mtls/
 COPY instant-mtls.conf /usr/local/openresty/nginx/conf/nginx.conf
-RUN sed -i "s/\${domain}/$(cat /etc/instant-mtls/service-id/domain)/g" /etc/instant-mtls/org-domain.conf
-RUN sed -i "s/\${domain}/$(cat /etc/instant-mtls/service-id/domain)/g" /etc/instant-mtls/identityplus-defaults.inc
+RUN sed -i "s|${domain}|$(cat /etc/instant-mtls/service-id/domain | sed 's/[&/\]/\\&/g')|g" /etc/instant-mtls/org-domain.conf
+RUN sed -i "s|${domain}|$(cat /etc/instant-mtls/service-id/domain | sed 's/[&/\]/\\&/g')|g" /etc/instant-mtls/identityplus-defaults.inc
 
 RUN echo "[supervisord]" > /etc/supervisord.conf && \
     echo "nodaemon=true" >> /etc/supervisord.conf && \
