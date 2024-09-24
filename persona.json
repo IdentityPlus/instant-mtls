@@ -8,6 +8,6 @@
 
     "client_cert": "/etc/instant-mtls/Service-Agent.cer",
     "client_key": "/etc/instant-mtls/Service-Agent.key",
-    "ca_cert": "/etc/instant-mtls/service-id/identity-plus-root.cer",
+    "ca_cert": "/etc/instant-mtls/service-id/identity-plus-root-ca.cer",
     "reload_hour": 3
 }

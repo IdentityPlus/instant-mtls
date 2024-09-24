@@ -38,10 +38,8 @@ RUN openssl req -new -newkey rsa:2048 -days 36500 -nodes -x509 -subj '/CN=sni-su
 
 RUN ./identityplus -f /etc/instant-mtls -d "Service-Agent" enroll ${token}
 RUN ./identityplus -f /etc/instant-mtls -d "Service-Agent" issue-service-identity
-# print de domain before fetching the chain to have it alone in the directory
-RUN ls /etc/instant-mtls/service-id | grep .cer | sed "s/.cer//" | sed "s/rbac.//"> /etc/instant-mtls/service-id/domain
 RUN ./identityplus -f /etc/instant-mtls -d "Service-Agent" get-trust-chain
-# RUN curl https://platform.identity.plus/download/trust-chain?format=pem --cert /etc/instant-mtls/Service-Agent.cer --key /etc/instant-mtls/Service-Agent.key > /etc/instant-mtls/identity-plus-trust-store.pem
+RUN ls /etc/instant-mtls/service-id | grep .key | sed "s/.cer//" | sed "s/rbac.//"> /etc/instant-mtls/service-id/domain
 
 # get the Identity Plus Lua integration
 RUN mkdir -p /opt/identity.plus/instant-mtls/shell
@@ -53,19 +51,18 @@ RUN curl https://raw.githubusercontent.com/IdentityPlus/cli/main/update-agent.sh
 RUN chmod o+x /opt/identity.plus/cli/update-agent.sh
 RUN exec ./update-agent.sh /etc/instant-mtls "Service-Agent"
 
-RUN curl https://raw.githubusercontent.com/IdentityPlus/cli/main/update-service.sh > /opt/identity.plus/instant-mtls/shell/update-service.sh
-RUN chmod o+x /opt/identity.plus/instant-mtls/shell/update-service.sh
-WORKDIR /opt/identity.plus/instant-mtls/shell
+RUN curl https://raw.githubusercontent.com/IdentityPlus/cli/main/update-service.sh > /opt/identity.plus/cli/update-service.sh
+RUN chmod o+x /opt/identity.plus/cli/update-service.sh
 RUN exec ./update-service.sh /etc/instant-mtls "Service-Agent"
-
-RUN rm /usr/local/openresty/nginx/conf/nginx.conf
 
 # we will map conf directory into the docker instance, but the following files (which will be referred to as defaults) will be buit into the image
 COPY org-domain.conf /etc/instant-mtls/
 COPY identityplus-defaults.inc /etc/instant-mtls/
+COPY conf /etc/instant-mtls/
+RUN find /etc/instant-mtls -type f -exec sed -i "s|\${domain}|$(cat /etc/instant-mtls/service-id/domain | sed 's/[&/\]/\\&/g')|g" {} +
+
+RUN rm /usr/local/openresty/nginx/conf/nginx.conf
 COPY instant-mtls.conf /usr/local/openresty/nginx/conf/nginx.conf
-RUN sed -i "s/\${domain}/$(cat /etc/instant-mtls/service-id/domain)/g" /etc/instant-mtls/org-domain.conf
-RUN sed -i "s/\${domain}/$(cat /etc/instant-mtls/service-id/domain)/g" /etc/instant-mtls/identityplus-defaults.inc
 RUN sed -i "s/\${domain}/$(cat /etc/instant-mtls/service-id/domain)/g" /usr/local/openresty/nginx/conf/nginx.conf
 
 RUN echo "[supervisord]" > /etc/supervisord.conf && \
@@ -87,6 +84,5 @@ RUN echo "[supervisord]" > /etc/supervisord.conf && \
     echo "command=/usr/local/openresty/bin/openresty -g 'daemon off;'" >> /etc/supervisord.conf
 
 CMD ["/usr/bin/supervisord"]
-
 
 # CMD ["/usr/local/openresty/bin/openresty -g daemon off;"]
