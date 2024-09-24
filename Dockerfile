@@ -58,7 +58,7 @@ RUN exec ./update-service.sh /etc/instant-mtls "Service-Agent"
 # we will map conf directory into the docker instance, but the following files (which will be referred to as defaults) will be buit into the image
 COPY org-domain.conf /etc/instant-mtls/
 COPY identityplus-defaults.inc /etc/instant-mtls/
-COPY conf /etc/instant-mtls/
+COPY conf /etc/instant-mtls/conf/
 RUN find /etc/instant-mtls -type f -exec sed -i "s|\${domain}|$(cat /etc/instant-mtls/service-id/domain | sed 's/[&/\]/\\&/g')|g" {} +
 
 RUN rm /usr/local/openresty/nginx/conf/nginx.conf
