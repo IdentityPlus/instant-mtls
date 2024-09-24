@@ -36,7 +36,7 @@ RUN chown www-data:www-data /var/cache/instant-mtls
 # create default certificates
 RUN openssl req -new -newkey rsa:2048 -days 36500 -nodes -x509 -subj '/CN=sni-support-required-for-valid-ssl' -keyout /etc/instant-mtls/resty-auto-ssl-fallback.key -out /etc/instant-mtls/resty-auto-ssl-fallback.cer
 
-RUN ./identityplus -f /etc/instant-mtls -d "Service-Agent" enroll-service-device ${token}
+RUN ./identityplus -f /etc/instant-mtls -d "Service-Agent" enroll ${token}
 RUN ./identityplus -f /etc/instant-mtls -d "Service-Agent" issue-service-identity
 RUN ./identityplus -f /etc/instant-mtls -d "Service-Agent" get-trust-store
 # RUN curl https://platform.identity.plus/download/trust-chain?format=pem --cert /etc/instant-mtls/Service-Agent.cer --key /etc/instant-mtls/Service-Agent.key > /etc/instant-mtls/identity-plus-trust-store.pem
