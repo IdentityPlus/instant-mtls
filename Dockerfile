@@ -53,7 +53,7 @@ RUN curl https://raw.githubusercontent.com/IdentityPlus/cli/main/update-agent.sh
 RUN chmod o+x /opt/identity.plus/cli/update-agent.sh
 RUN exec ./update-agent.sh /etc/instant-mtls "Service-Agent"
 
-RUN curl https://raw.githubusercontent.com/IdentityPlus/instant-mtls/master/shell/update-service.sh > /opt/identity.plus/instant-mtls/shell/update-service.sh
+RUN curl https://raw.githubusercontent.com/IdentityPlus/cli/main/update-service.sh > /opt/identity.plus/instant-mtls/shell/update-service.sh
 RUN chmod o+x /opt/identity.plus/instant-mtls/shell/update-service.sh
 WORKDIR /opt/identity.plus/instant-mtls/shell
 RUN exec ./update-service.sh /etc/instant-mtls "Service-Agent"
