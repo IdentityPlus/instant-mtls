@@ -42,7 +42,7 @@ RUN ./identityplus -f /etc/instant-mtls -d "Service-Agent" get-trust-chain
 RUN ls /etc/instant-mtls/service-id | grep .key | sed "s/.key//" | sed "s/rbac.//" > /etc/instant-mtls/service-id/domain
 
 # get the Identity Plus Lua integration
-RUN mkdir -p /opt/identity.plus/instant-mtls/shell
+RUN mkdir -p /opt/identity.plus/instant-mtls
 COPY instant-mtls/config.lua /opt/identity.plus/instant-mtls/
 COPY instant-mtls/identityplus.lua /opt/identity.plus/instant-mtls/
 
