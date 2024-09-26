@@ -31,4 +31,4 @@ cd /opt
 git clone https://github.com/IdentityPlus/instant-mtls.git
 cd instant-mtls
 docker build --build-arg="token=AUTOPROVISION-TOKEN-FROM-IDENTITY_PLUS" -t instant-mtls-idp .
-docker run -d -v /opt/instant-mtls/conf:/etc/instant-mtls/conf -p 80:80 -p 443:443 --name mtls-gateway instant-mtls-idp
+docker run -d -p 80:80 -p 443:443 --name mtls-gateway instant-mtls-idp

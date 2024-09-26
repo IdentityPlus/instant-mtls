@@ -45,6 +45,9 @@ RUN ls /etc/instant-mtls/service-id | grep .key | sed "s/.key//" | sed "s/rbac./
 RUN mkdir -p /opt/identity.plus/instant-mtls
 COPY instant-mtls/config.lua /opt/identity.plus/instant-mtls/
 COPY instant-mtls/identityplus.lua /opt/identity.plus/instant-mtls/
+COPY conf /etc/instant-mtls/conf/
+RUN rm /usr/local/openresty/nginx/conf/nginx.conf
+COPY instant-mtls.conf /usr/local/openresty/nginx/conf/nginx.conf
 
 # install identity refresh automation
 RUN curl https://raw.githubusercontent.com/IdentityPlus/cli/main/update-agent.sh > /opt/identity.plus/cli/update-agent.sh
@@ -56,12 +59,8 @@ RUN chmod o+x /opt/identity.plus/cli/update-service.sh
 RUN exec ./update-service.sh /etc/instant-mtls "Service-Agent"
 
 # we will map conf directory into the docker instance, but the following files (which will be referred to as defaults) will be buit into the image
-COPY conf /etc/instant-mtls/conf/
-RUN find /etc/instant-mtls/conf -type f -exec sed -i "s/\${domain-template}/$(cat /etc/instant-mtls/service-id/domain)/g" {} +
-
-RUN rm /usr/local/openresty/nginx/conf/nginx.conf
-COPY instant-mtls.conf /usr/local/openresty/nginx/conf/nginx.conf
 RUN sed -i "s/\${domain-template}/$(cat /etc/instant-mtls/service-id/domain)/g" /usr/local/openresty/nginx/conf/nginx.conf
+RUN find /etc/instant-mtls/conf -type f -exec sed -i "s/\${domain-template}/$(cat /etc/instant-mtls/service-id/domain)/g" {} +
 
 RUN echo "[supervisord]" > /etc/supervisord.conf && \
     echo "nodaemon=true" >> /etc/supervisord.conf && \
