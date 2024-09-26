@@ -6,8 +6,11 @@
         }
     ],
 
+    "identity_directory": "/etc/instant-mtls",
+    "agent_name": "Service-Agent",
     "client_cert": "/etc/instant-mtls/Service-Agent.cer",
     "client_key": "/etc/instant-mtls/Service-Agent.key",
-    "ca_cert": "/etc/instant-mtls/service-id/identity-plus-root-ca.cer",
-    "auto_reload": false
+    "broker_ca": "/etc/instant-mtls/service-id/identity-plus-root-ca.cer",
+    "auto_reload": false,
+    "verbose": true
 }

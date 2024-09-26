@@ -32,7 +32,7 @@ go build
 ./identityplus -f /media/Work/Temp/IDP-Demo -d 1Party enroll AUTOPROVISION-TOKEN-FROM-IDENTITY_PLUS
 
 # get the trust store (identity is needed)
-curl https://platform.identity.plus/download/trust-chain?format=pem --cert /media/Work/Temp/IDP-Demo/1Party.cer --key /media/Work/Temp/IDP-Demo/1Party.key > /media/Work/Temp/identity-plus-root.cer
+./identityplus -f /media/Work/Temp/IDP-Demo -d 1Party get-trust-chain
 
 # install identity rotation automation
 ./update-agent.sh /media/Work/Temp/IDP-Demo 1Party
@@ -40,15 +40,15 @@ curl https://platform.identity.plus/download/trust-chain?format=pem --cert /medi
 
 # internal client demo calls
 curl https://10.0.0.2:9000/private/content.txt
-curl https://minio-service.rbac.instant.mtls.app/private/content.txt --cert /media/Work/Temp/IDP-Demo/1Party.cer --key /media/Work/Temp/IDP-Demo/1Party.key --cacert /media/Work/Temp/identity-plus-root.cer
-curl https://minio-service.rbac.instant.mtls.app/identityplus/diagnose --cert /media/Work/Temp/IDP-Demo/1Party.cer --key /media/Work/Temp/IDP-Demo/1Party.key --cacert /media/Work/Temp/identity-plus-root.cer
+curl https://minio-service.rbac.instant.mtls.app/private/content.txt --cert /media/Work/Temp/IDP-Demo/1Party.cer --key /media/Work/Temp/IDP-Demo/1Party.key --cacert /media/Work/Temp/IDP-Demo/service-id/identity-plus-root-ca.cer
+curl https://minio-service.rbac.instant.mtls.app/identityplus/diagnose --cert /media/Work/Temp/IDP-Demo/1Party.cer --key /media/Work/Temp/IDP-Demo/1Party.key --cacert /media/Work/Temp/IDP-Demo/service-id/identity-plus-root-ca.cer
 ./identityplus -f /media/Work/Temp/IDP-Demo -d 1Party update 
 ./identityplus -f /media/Work/Temp/IDP-Demo -d 1Party renew 
-curl https://minio-service.rbac.instant.mtls.app/identityplus/diagnose --cert /media/Work/Temp/IDP-Demo/1Party.cer --key /media/Work/Temp/IDP-Demo/1Party.key --cacert /media/Work/Temp/identity-plus-root.cer
+curl https://minio-service.rbac.instant.mtls.app/identityplus/diagnose --cert /media/Work/Temp/IDP-Demo/1Party.cer --key /media/Work/Temp/IDP-Demo/1Party.key --cacert /media/Work/Temp/IDP-Demo/service-id/identity-plus-root-ca.cer
 
 
 # 4rd party client demo calls
 ./identityplus -f /media/Work/Temp/IDP-Demo -d 3Party enroll 
-curl https://minio-external.rbac.instant.mtls.app/private/content.txt --cert /media/Work/Temp/IDP-Demo/3Party.cer --key /media/Work/Temp/IDP-Demo/3Party.key --cacert /media/Work/Temp/identity-plus-root.cer
-curl https://minio-external.rbac.instant.mtls.app/identityplus/diagnose --cert /media/Work/Temp/IDP-Demo/3Party.cer --key /media/Work/Temp/IDP-Demo/3Party.key --cacert /media/Work/Temp/identity-plus-root.cer
+curl https://minio-external.rbac.instant.mtls.app/private/content.txt --cert /media/Work/Temp/IDP-Demo/3Party.cer --key /media/Work/Temp/IDP-Demo/3Party.key --cacert /media/Work/Temp/IDP-Demo/service-id/identity-plus-root-ca.cer
+curl https://minio-external.rbac.instant.mtls.app/identityplus/diagnose --cert /media/Work/Temp/IDP-Demo/3Party.cer --key /media/Work/Temp/IDP-Demo/3Party.key --cacert /media/Work/Temp/IDP-Demo/service-id/identity-plus-root-ca.cer
 ./identityplus -f /media/Work/Temp/IDP-Demo -d 3Party renew
